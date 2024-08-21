@@ -1,0 +1,145 @@
+<html><head><base href="." />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scratch Explorer</title>
+<style>
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #4D97FF; /* Scratch blue */
+    }
+    header {
+        background-color: #FF9F00; /* Scratch orange */
+        color: white;
+        width: 100%;
+        text-align: center;
+        padding: 1rem 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        margin: 0;
+        font-size: 2.5rem;
+    }
+    .container {
+        text-align: center;
+        background-color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        width: 90%;
+        margin-top: 2rem;
+    }
+    h2 {
+        color: #4D97FF; /* Scratch blue */
+    }
+    button {
+        background-color: #FF9F00; /* Scratch orange */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #E68D00;
+    }
+    #advertiseForm {
+        display: none;
+        margin-top: 20px;
+    }
+    input[type="text"] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border: 2px solid #4D97FF;
+        border-radius: 4px;
+    }
+    #cat {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 20px;
+    }
+</style>
+</head>
+<body>
+    <header>
+        <h1>Scratch Explorer</h1>
+    </header>
+    <div class="container">
+        <svg id="cat" viewBox="0 0 95 111" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="#FF9F00" fill="#FF9F00">
+                <path d="M 50,5 L 69,19 A 20,10 0 0,1 86,23 A 15,15 0 0,1 92,36 A 15,15 0 0,1 87,51 L 64,77 A 15,10 0 0,1 50,82 A 15,10 0 0,1 36,77 L 13,51 A 15,15 0 0,1 8,36 A 15,15 0 0,1 14,23 A 20,10 0 0,1 31,19 Z" />
+                <circle cx="35" cy="40" r="5" />
+                <circle cx="65" cy="40" r="5" />
+                <path d="M 40,60 Q 50,70 60,60" fill="none" stroke-width="5" />
+            </g>
+        </svg>
+        <h2>Discover Amazing Projects</h2>
+        <button id="randomButton">Take me to a random Scratch project</button>
+        <br><br>
+        <button id="advertiseButton">Advertise your Own</button>
+        <div id="advertiseForm">
+            <input type="text" id="projectLink" placeholder="Enter your Scratch project link">
+            <button id="submitProject">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize project list with default projects
+        let projectList = [
+            'https://scratch.mit.edu/projects/1043979405/',
+            'https://scratch.mit.edu/projects/1050748041/',
+            'https://scratch.mit.edu/projects/1055498316/'
+        ];
+
+        // Load projects from localStorage if available
+        const storedProjects = localStorage.getItem('scratchProjects');
+        if (storedProjects) {
+            projectList = JSON.parse(storedProjects);
+        }
+
+        document.getElementById('randomButton').addEventListener('click', () => {
+            if (projectList.length > 0) {
+                const randomIndex = Math.floor(Math.random() * projectList.length);
+                window.open(projectList[randomIndex], '_blank');
+            } else {
+                alert('No projects available. Be the first to add one!');
+            }
+        });
+
+        document.getElementById('advertiseButton').addEventListener('click', () => {
+            const form = document.getElementById('advertiseForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('submitProject').addEventListener('click', () => {
+            const projectLink = document.getElementById('projectLink').value;
+            if (projectLink && projectLink.startsWith('https://scratch.mit.edu/projects/')) {
+                // Add project to list
+                projectList.push(projectLink);
+                
+                // Save updated list to localStorage
+                localStorage.setItem('scratchProjects', JSON.stringify(projectList));
+                
+                alert('Your project has been added to the list!');
+                document.getElementById('projectLink').value = '';
+                document.getElementById('advertiseForm').style.display = 'none';
+            } else {
+                alert('Please enter a valid Scratch project link.');
+            }
+        });
+    </script>
+</body></html>
