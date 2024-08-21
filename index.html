@@ -73,6 +73,7 @@
         margin-bottom: 20px;
     }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
 </head>
 <body>
     <header>
@@ -98,6 +99,12 @@
     </div>
 
     <script>
+        // Initialize Gun
+        const gun = Gun(['https://gun-manhattan.herokuapp.com/gun']);
+
+        // Reference to our projects in the database
+        const projects = gun.get('scratch-explorer-projects');
+
         // Initialize project list with default projects
         let projectList = [
             'https://scratch.mit.edu/projects/1043979405/',
@@ -105,11 +112,12 @@
             'https://scratch.mit.edu/projects/1055498316/'
         ];
 
-        // Load projects from localStorage if available
-        const storedProjects = localStorage.getItem('scratchProjects');
-        if (storedProjects) {
-            projectList = JSON.parse(storedProjects);
-        }
+        // Load projects from Gun
+        projects.map().once((project, id) => {
+            if (project && !projectList.includes(project)) {
+                projectList.push(project);
+            }
+        });
 
         document.getElementById('randomButton').addEventListener('click', () => {
             if (projectList.length > 0) {
@@ -128,17 +136,27 @@
         document.getElementById('submitProject').addEventListener('click', () => {
             const projectLink = document.getElementById('projectLink').value;
             if (projectLink && projectLink.startsWith('https://scratch.mit.edu/projects/')) {
-                // Add project to list
-                projectList.push(projectLink);
+                // Add project to Gun database
+                projects.set(projectLink);
                 
-                // Save updated list to localStorage
-                localStorage.setItem('scratchProjects', JSON.stringify(projectList));
+                // Add project to local list if it's not already there
+                if (!projectList.includes(projectLink)) {
+                    projectList.push(projectLink);
+                }
                 
                 alert('Your project has been added to the list!');
                 document.getElementById('projectLink').value = '';
                 document.getElementById('advertiseForm').style.display = 'none';
             } else {
                 alert('Please enter a valid Scratch project link.');
+            }
+        });
+
+        // Listen for new projects added to the database
+        projects.map().on((project, id) => {
+            if (project && !projectList.includes(project)) {
+                projectList.push(project);
+                console.log('New project added:', project);
             }
         });
     </script>
